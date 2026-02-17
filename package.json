@@ -1,0 +1,65 @@
+{
+  "name": "@mckabue/react-use-async",
+  "version": "1.0.0",
+  "description": "A lightweight React hook for managing async operations with loading states, error handling, and data merging.",
+  "keywords": [
+    "react",
+    "hook",
+    "async",
+    "useAsync",
+    "loading",
+    "typescript",
+    "react-hook"
+  ],
+  "author": "Kabui Charles",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mckabue/react-use-async.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mckabue/react-use-async/issues"
+  },
+  "homepage": "https://github.com/mckabue/react-use-async#readme",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run clean && npm run build && npm test"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.2.2",
+    "@types/jest": "^29.5.12",
+    "@types/react": "^18.2.45",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "terser": "^5.46.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.6.0"
+  }
+}
