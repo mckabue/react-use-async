@@ -38,6 +38,7 @@
   },
   "scripts": {
     "build": "vite build",
+    "dev": "tsc -p tsconfig.json --noEmit",
     "clean": "rm -rf dist",
     "test": "jest",
     "test:watch": "jest --watch",
