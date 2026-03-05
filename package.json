@@ -1,6 +1,6 @@
 {
   "name": "@mckabue/react-use-async",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight React hook for managing async operations with loading states, error handling, and data merging.",
   "keywords": [
     "react",

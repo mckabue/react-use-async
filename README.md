@@ -16,6 +16,7 @@ Managing async state in React often means writing the same boilerplate: `isLoadi
 - **Error capture** — errors are caught and exposed, not swallowed
 - **Data merging** — `continueWith` supports pagination / incremental loading
 - **Argument tracking** — `args` exposes the last-used arguments
+- **Execution counting** — `executionCount` tracks how many times `execute()` has been called
 - **Zero dependencies** (except React)
 - **Full TypeScript generics** for type-safe data and arguments
 
@@ -119,6 +120,7 @@ function InfiniteList() {
 | `isContinuing` | `boolean` | Continuation in progress |
 | `isLoading` | `boolean` | Any operation in progress |
 | `args` | `A` | Arguments from last `execute()` call |
+| `executionCount` | `number` | Number of times `execute()` has been called |
 | `error` | `Error \| null` | Error from last operation |
 | `execute` | `(...args: A) => Promise<void>` | Manually trigger the async callback |
 | `continueWith` | `(cb, merger) => () => Promise<void>` | Continue with data merging |

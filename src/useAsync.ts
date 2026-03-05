@@ -21,6 +21,8 @@ export type AsyncResponseType<R, A extends any[]> = {
   isLoading: boolean
   /** The arguments passed to the last `execute()` call. */
   args: A
+  /** The number of times `execute()` has been called. */
+  executionCount: number
   /** The error from the last async operation, or null. */
   error: Error | null | undefined
   /** Manually trigger the async callback with arguments. */
@@ -65,6 +67,7 @@ export const useAsync = <R, A extends any[]>(
   const [isContinuing, setIsContinuing] = useState(false)
   const [error, setError] = useState<Error | null | undefined>(null)
   const [args, setArgs] = useState<A>([] as unknown as A)
+  const [executionCount, setExecutionCount] = useState(0)
 
   const executeOrContinue = async (
     callback: () => Promise<R>,
@@ -73,6 +76,7 @@ export const useAsync = <R, A extends any[]>(
   ) => {
     setIsLoading(true)
     setError(null)
+    setExecutionCount(prev => prev + 1)
     try {
       const response = await callback()
       if (merger) {
@@ -103,6 +107,7 @@ export const useAsync = <R, A extends any[]>(
     isContinuing,
     isLoading: isExecuting || isContinuing,
     args,
+    executionCount,
     error,
     execute: useCallback(async (...args: A) => {
       setArgs(args)
