@@ -102,6 +102,23 @@ describe('useAsync', () => {
     expect(result.current.error).toBeNull()
     expect(result.current.data).toBe('success')
   })
+
+  it('should clear error when clearError is called', async () => {
+    const error = new Error('test error')
+    const mockFn = jest.fn().mockRejectedValue(error)
+
+    const { result } = renderHook(() => useAsync(mockFn))
+
+    await waitFor(() => {
+      expect(result.current.error).toBe(error)
+    })
+
+    act(() => {
+      result.current.clearError()
+    })
+
+    expect(result.current.error).toBeNull()
+  })
 })
 
 describe('useDelayedAsync', () => {
