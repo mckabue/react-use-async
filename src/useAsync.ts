@@ -25,6 +25,8 @@ export type AsyncResponseType<R, A extends any[]> = {
   executionCount: number
   /** The error from the last async operation, or null. */
   error: Error | null | undefined
+  /** Clear the current error state. Useful for dismissing errors on navigation or user action. */
+  clearError: () => void
   /** Manually trigger the async callback with arguments. */
   execute: (...args: A) => Promise<void>
   /**
@@ -109,6 +111,7 @@ export const useAsync = <R, A extends any[]>(
     args,
     executionCount,
     error,
+    clearError: useCallback(() => setError(null), []),
     execute: useCallback(async (...args: A) => {
       setArgs(args)
       return executeOrContinue(
