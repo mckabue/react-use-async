@@ -29,7 +29,7 @@ export default defineConfig({
   },
   plugins: [
     dts({
-      rollupTypes: true,
+      bundleTypes: true,
       tsconfigPath: "./tsconfig.json",
     }),
   ],
