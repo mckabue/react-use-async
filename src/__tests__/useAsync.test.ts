@@ -69,7 +69,10 @@ describe('useAsync', () => {
     })
 
     const continueCallback = jest.fn().mockResolvedValue({ items: [3, 4] })
-    const merger = (oldData: any, newData: any) => ({
+    const merger = (
+      oldData: { items: number[] } | null,
+      newData: { items: number[] } | null,
+    ) => ({
       items: [...(oldData?.items ?? []), ...(newData?.items ?? [])],
     })
 
