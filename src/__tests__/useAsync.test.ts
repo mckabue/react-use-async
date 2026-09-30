@@ -22,7 +22,7 @@ describe('useAsync', () => {
   it('should not execute on mount when executeOnMount is false', () => {
     const mockFn = jest.fn().mockResolvedValue('result')
 
-    const { result } = renderHook(() => useAsync(mockFn, [], false))
+    const { result } = renderHook(() => useAsync(mockFn, [], {}, false))
 
     expect(result.current.isExecuting).toBe(false)
     expect(result.current.isLoading).toBe(false)
@@ -47,7 +47,7 @@ describe('useAsync', () => {
   it('should execute manually with arguments', async () => {
     const mockFn = jest.fn().mockResolvedValue('manual result')
 
-    const { result } = renderHook(() => useAsync(mockFn, [], false))
+    const { result } = renderHook(() => useAsync(mockFn, [], {}, false))
 
     await act(async () => {
       await result.current.execute('arg1', 'arg2')

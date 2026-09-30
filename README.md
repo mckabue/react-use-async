@@ -17,6 +17,7 @@ Managing async state in React often means writing the same boilerplate: `isLoadi
 - **Data merging** — `continueWith` supports pagination / incremental loading
 - **Argument tracking** — `args` exposes the last-used arguments
 - **Execution counting** — `executionCount` tracks how many times `execute()` has been called
+- **Optional `debounce` / `throttle`** — cap how often `execute()` actually runs, without touching the callback
 - **Zero dependencies** (except React)
 - **Full TypeScript generics** for type-safe data and arguments
 
@@ -103,12 +104,13 @@ function InfiniteList() {
 
 ## API Reference
 
-### `useAsync(asyncCallback, dependencies?, executeOnMount?)`
+### `useAsync(asyncCallback, dependencies?, timing?, executeOnMount?)`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `asyncCallback` | `(...args: A) => Promise<R>` | — | The async function to execute |
 | `dependencies` | `DependencyList` | `[]` | React dependency list (triggers re-execution) |
+| `timing` | `{ debounce?: number } \| { throttle?: number }` | `{}` | Timing applied to `execute()`; `0` or omitted applies none. The mount execution is never timed |
 | `executeOnMount` | `boolean` | `true` | Whether to run on mount |
 
 **Returns:** `AsyncResponseType<R, A>`
@@ -126,7 +128,7 @@ function InfiniteList() {
 | `execute` | `(...args: A) => Promise<void>` | Manually trigger the async callback |
 | `continueWith` | `(cb, merger) => () => Promise<void>` | Continue with data merging |
 
-### `useDelayedAsync(asyncCallback, dependencies?)`
+### `useDelayedAsync(asyncCallback, dependencies?, timing?)`
 
 Same as `useAsync` but with `executeOnMount` set to `false`. Perfect for user-triggered operations.
 
