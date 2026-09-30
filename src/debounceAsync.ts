@@ -44,8 +44,7 @@ export const debounceAsync = <Args extends unknown[], R>(
       args = undefined
       try {
         func(...run).then(resolveFn, rejectFn)
-      }
-      catch (err) {
+      } catch (err) {
         // Sync-throwing funcs must reject waiters, not leave them hanging.
         rejectFn(err)
       }

@@ -27,10 +27,11 @@ export const throttleAsync = <Args extends unknown[], R>(
     let started: Promise<R>
     try {
       started = func(...args)
-    }
-    catch (error) {
+    } catch (error) {
       // A sync-throwing func must reject the caller, not throw through it.
-      return Promise.reject(error)
+      return Promise.reject(
+        error instanceof Error ? error : new Error(String(error)),
+      )
     }
 
     inFlight = started.finally(() => {

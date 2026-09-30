@@ -17,8 +17,8 @@ export type MergeType<R> = (oldData: R | null, newData: R | null) => R | null
  * `0` (the default) applies no timing at all. The mount execution is never timed.
  */
 export type AsyncTiming =
-  | { debounce?: number, throttle?: never }
-  | { throttle?: number, debounce?: never }
+  | { debounce?: number; throttle?: never }
+  | { throttle?: number; debounce?: never }
 
 /**
  * Return type of the useAsync hook.
@@ -94,20 +94,17 @@ export const useAsync = <R, A extends any[]>(
   ) => {
     setIsLoading(true)
     setError(null)
-    setExecutionCount(prev => prev + 1)
+    setExecutionCount((prev) => prev + 1)
     try {
       const response = await callback()
       if (merger) {
-        setData(prevData => merger(prevData, response))
-      }
-      else {
+        setData((prevData) => merger(prevData, response))
+      } else {
         setData(response)
       }
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       setError(err as Error)
-    }
-    finally {
+    } finally {
       setIsLoading(false)
     }
   }
@@ -123,10 +120,7 @@ export const useAsync = <R, A extends any[]>(
   // executeOrContinue, or it would overwrite `data` with undefined.
   const runExecute = useCallback(async (...args: A) => {
     setArgs(args)
-    return executeOrContinue(
-      async () => asyncCallback(...args),
-      setIsExecuting,
-    )
+    return executeOrContinue(async () => asyncCallback(...args), setIsExecuting)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
 
@@ -143,7 +137,6 @@ export const useAsync = <R, A extends any[]>(
       return throttleAsync(runExecute, throttle)
     }
     return runExecute
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runExecute, timing.debounce, timing.throttle])
 
   return {

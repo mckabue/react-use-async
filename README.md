@@ -148,6 +148,41 @@ const { data, execute } = useAsync<User[], [string]>(
 // execute accepts (query: string) => Promise<void>
 ```
 
+## Development
+
+```bash
+npm install
+```
+
+Then run these from this package:
+
+| Command | What it does |
+| --- | --- |
+| `npm test` | Jest suite |
+| `npm run test:watch` | Jest in watch mode |
+| `npm run test:coverage` | Jest with coverage |
+| `npm run type-check` | `tsc --noEmit` |
+| `npm run lint` | `eslint src` |
+| `npm run lint:fix` | `eslint src --fix` |
+| `npm run format` | `prettier --write` over `src`, the config files and `package.json` |
+| `npm run build` | `vite build` to `dist/index.cjs.js`, `dist/index.esm.js`, `dist/index.d.ts` |
+| `npm run clean` | remove `dist` |
+
+Verify the exact payload a release would upload, without uploading it:
+
+```bash
+npm pack --dry-run
+```
+
+Publish:
+
+```bash
+npm run clean && npm run build && npm test   # the chain prepublishOnly runs for you
+npm version patch                            # or minor / major
+git push --follow-tags
+npm publish
+```
+
 ## License
 
 MIT © [Kabui Charles](https://github.com/mckabue)

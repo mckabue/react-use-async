@@ -6,7 +6,9 @@ describe('debounceAsync', () => {
 
   it('coalesces rapid calls into one run with the latest args, resolving every caller', async () => {
     jest.useFakeTimers()
-    const func = jest.fn<(...args: [number]) => Promise<string>>(async (n) => `n=${n}`)
+    const func = jest.fn<(...args: [number]) => Promise<string>>(
+      async (n) => `n=${n}`,
+    )
     const debounced = debounceAsync(func, 100)
 
     const p1 = debounced(1)
@@ -31,15 +33,15 @@ describe('debounceAsync', () => {
     const func = jest.fn<() => Promise<void>>(async () => {})
     const debounced = debounceAsync(func, 100)
 
-    debounced()                    // would fire at t=100
+    void debounced() // would fire at t=100
     jest.advanceTimersByTime(50)
-    debounced()                    // rescheduled to t=150
+    void debounced() // rescheduled to t=150
     jest.advanceTimersByTime(50)
-    debounced()                    // rescheduled to t=200
+    void debounced() // rescheduled to t=200
     jest.advanceTimersByTime(50)
     expect(func).not.toHaveBeenCalled() // t=150 < 200
 
-    jest.advanceTimersByTime(50)   // t=200 → fires
+    jest.advanceTimersByTime(50) // t=200 → fires
     await Promise.resolve()
     expect(func).toHaveBeenCalledTimes(1)
   })
@@ -71,8 +73,12 @@ describe('debounceAsync', () => {
     const p1 = debounced()
     const p2 = debounced()
     const seen: unknown[] = []
-    p1.catch((e) => { seen.push(e) })
-    p2.catch((e) => { seen.push(e) })
+    p1.catch((e) => {
+      seen.push(e)
+    })
+    p2.catch((e) => {
+      seen.push(e)
+    })
 
     jest.advanceTimersByTime(100)
     await Promise.resolve()
@@ -86,12 +92,16 @@ describe('debounceAsync', () => {
     jest.useFakeTimers()
     const boom = new Error('sync boom')
     // A `never`-returning sync thrower is assignable to `() => Promise<R>`.
-    const func = jest.fn<() => Promise<void>>(() => { throw boom })
+    const func = jest.fn<() => Promise<void>>(() => {
+      throw boom
+    })
     const debounced = debounceAsync(func, 100)
 
     const p = debounced()
     const seen: unknown[] = []
-    p.catch((e) => { seen.push(e) })
+    p.catch((e) => {
+      seen.push(e)
+    })
 
     jest.advanceTimersByTime(100)
     await Promise.resolve()
@@ -105,7 +115,10 @@ describe('debounceAsync', () => {
     jest.useFakeTimers()
     const resolvers: Array<() => void> = []
     const func = jest.fn<() => Promise<void>>(
-      () => new Promise<void>((resolve) => { resolvers.push(() => resolve()) }),
+      () =>
+        new Promise<void>((resolve) => {
+          resolvers.push(() => resolve())
+        }),
     )
     const debounced = debounceAsync(func, 100)
 
@@ -114,7 +127,7 @@ describe('debounceAsync', () => {
     await Promise.resolve()
     expect(func).toHaveBeenCalledTimes(1)
 
-    const second = debounced()    // func still in-flight → fresh window
+    const second = debounced() // func still in-flight → fresh window
     jest.advanceTimersByTime(100)
     expect(func).toHaveBeenCalledTimes(2)
 
@@ -131,10 +144,12 @@ describe('debounceAsync', () => {
 
     const p = debounced()
     const seen: unknown[] = []
-    p.catch((e) => { seen.push(e) })
+    p.catch((e) => {
+      seen.push(e)
+    })
 
     debounced.cancel()
-    await Promise.resolve()          // drain the rejection microtask
+    await Promise.resolve() // drain the rejection microtask
     jest.advanceTimersByTime(1_000)
 
     expect(func).not.toHaveBeenCalled()
@@ -149,10 +164,12 @@ describe('debounceAsync', () => {
 
     const p1 = debounced()
     const seen: unknown[] = []
-    p1.catch((e) => { seen.push(e) })
-    debounced.cancel()            // drops window 1
+    p1.catch((e) => {
+      seen.push(e)
+    })
+    debounced.cancel() // drops window 1
 
-    const p2 = debounced()        // fresh window
+    const p2 = debounced() // fresh window
     jest.advanceTimersByTime(100)
     await Promise.resolve()
 
@@ -165,19 +182,24 @@ describe('debounceAsync', () => {
     jest.useFakeTimers()
     let release: () => void = () => {}
     const func = jest.fn<() => Promise<number>>(
-      () => new Promise<number>((resolve) => { release = () => resolve(9) }),
+      () =>
+        new Promise<number>((resolve) => {
+          release = () => resolve(9)
+        }),
     )
     const debounced = debounceAsync(func, 100)
 
-    debounced.cancel()            // nothing pending → no-op, no throw
+    debounced.cancel() // nothing pending → no-op, no throw
 
     const p = debounced()
     const seen: unknown[] = []
-    p.catch((e) => { seen.push(e) })
+    p.catch((e) => {
+      seen.push(e)
+    })
 
     jest.advanceTimersByTime(100) // timer fires → func in-flight
     await Promise.resolve()
-    debounced.cancel()            // already fired → no-op
+    debounced.cancel() // already fired → no-op
     release()
     await Promise.resolve()
 

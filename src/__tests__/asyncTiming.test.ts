@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react'
 import { useAsync, useDelayedAsync } from '../useAsync'
 import { describe, it, jest, expect } from '@jest/globals'
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 describe('useAsync / useDelayedAsync timing', () => {
   it('does not time the mount execution', async () => {
@@ -21,7 +21,9 @@ describe('useAsync / useDelayedAsync timing', () => {
 
   it('debounce collapses rapid executes into one run with the latest args', async () => {
     const fn = jest.fn(async (n: number) => n)
-    const { result } = renderHook(() => useDelayedAsync(fn, [], { debounce: 30 }))
+    const { result } = renderHook(() =>
+      useDelayedAsync(fn, [], { debounce: 30 }),
+    )
 
     await act(async () => {
       void result.current.execute(1)
@@ -40,7 +42,9 @@ describe('useAsync / useDelayedAsync timing', () => {
 
   it('throttle runs the first call and drops later calls inside the window', async () => {
     const fn = jest.fn(async (n: number) => n)
-    const { result } = renderHook(() => useDelayedAsync(fn, [], { throttle: 50 }))
+    const { result } = renderHook(() =>
+      useDelayedAsync(fn, [], { throttle: 50 }),
+    )
 
     await act(async () => {
       await result.current.execute(1)
@@ -82,7 +86,9 @@ describe('useAsync / useDelayedAsync timing', () => {
 
   it('rejects passing both debounce and throttle', () => {
     const fn = jest.fn(async () => 1)
-    const both = { debounce: 10, throttle: 10 } as unknown as { debounce: number }
+    const both = { debounce: 10, throttle: 10 } as unknown as {
+      debounce: number
+    }
 
     expect(() => renderHook(() => useAsync(fn, [], both, false))).toThrow(
       /never both/,
