@@ -41,27 +41,39 @@ describe('useAsync / useDelayedAsync timing', () => {
   })
 
   it('throttle runs the first call and drops later calls inside the window', async () => {
-    const fn = jest.fn(async (n: number) => n)
-    const { result } = renderHook(() =>
-      useDelayedAsync(fn, [], { throttle: 50 }),
-    )
+    // The throttle compares Date.now() deltas against the window. On a loaded
+    // machine the awaits between calls can outlast a real 50ms window, which
+    // made this flake. Drive the clock explicitly so the drop is deterministic.
+    let now = 1_000
+    const clock = jest.spyOn(Date, 'now').mockImplementation(() => now)
 
-    await act(async () => {
-      await result.current.execute(1)
-    })
-    expect(fn).toHaveBeenCalledTimes(1)
+    try {
+      const fn = jest.fn(async (n: number) => n)
+      const { result } = renderHook(() =>
+        useDelayedAsync(fn, [], { throttle: 50 }),
+      )
 
-    await act(async () => {
-      await result.current.execute(2)
-    })
-    expect(fn).toHaveBeenCalledTimes(1) // dropped
+      await act(async () => {
+        await result.current.execute(1)
+      })
+      expect(fn).toHaveBeenCalledTimes(1)
 
-    await act(async () => {
-      await sleep(60)
-      await result.current.execute(3)
-    })
-    expect(fn).toHaveBeenCalledTimes(2)
-    expect(fn).toHaveBeenLastCalledWith(3)
+      now += 10 // still inside the window
+      await act(async () => {
+        await result.current.execute(2)
+      })
+      expect(fn).toHaveBeenCalledTimes(1) // dropped
+
+      now += 100 // past the window
+      await act(async () => {
+        await result.current.execute(3)
+      })
+      expect(fn).toHaveBeenCalledTimes(2)
+      expect(fn).toHaveBeenLastCalledWith(3)
+    }
+    finally {
+      clock.mockRestore()
+    }
   })
 
   it('a dropped throttle call leaves data and loading state alone', async () => {
