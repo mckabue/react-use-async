@@ -1,7 +1,7 @@
 import type { DependencyList } from 'react'
 import { debounceAsync } from './debounceAsync'
 import { throttleAsync } from './throttleAsync'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 /**
  * Merge function type for combining old and new async data.
@@ -86,43 +86,26 @@ export const useAsync = <R, A extends any[]>(
   const [error, setError] = useState<Error | null | undefined>(null)
   const [args, setArgs] = useState<A>([] as unknown as A)
   const [executionCount, setExecutionCount] = useState(0)
-  // Each execution (on mount, on a dependency change or from `execute`) starts a new generation.
-  // A call from an older generation can settle after a newer call: its result and its error are
-  // ignored, so they cannot replace the newer data. A continuation keeps the generation it starts in.
-  const generationRef = useRef(0)
 
   const executeOrContinue = async (
     callback: () => Promise<R>,
     setIsLoading: typeof setIsExecuting,
     merger?: MergeType<R>,
   ) => {
-    const isContinuation = merger !== undefined
-    const generation = isContinuation
-      ? generationRef.current
-      : ++generationRef.current
-    const isCurrent = () => generation === generationRef.current
     setIsLoading(true)
     setError(null)
     setExecutionCount((prev) => prev + 1)
     try {
       const response = await callback()
-      if (!isCurrent()) {
-        return
-      }
       if (merger) {
         setData((prevData) => merger(prevData, response))
       } else {
         setData(response)
       }
     } catch (err: unknown) {
-      if (isCurrent()) {
-        setError(err as Error)
-      }
+      setError(err as Error)
     } finally {
-      // The newer execution keeps `isExecuting` true until it settles.
-      if (isContinuation || isCurrent()) {
-        setIsLoading(false)
-      }
+      setIsLoading(false)
     }
   }
 
